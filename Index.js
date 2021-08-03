@@ -2,6 +2,7 @@ const questions = require("inquirer");
 const mysql = require("mysql");
 const connection = require("./server");
 
+// Add departments, roles, employees
 // View departments, roles, employees
 
 // Update employee roles
@@ -22,7 +23,16 @@ async function init() {
         type: "list",
         name: "main",
         message: "Please Select an Option",
-        choices: ["Add", "View", "Update", "Exit"],
+        choices: [
+          "Add Department",
+          "View Department",
+          "Add Role",
+          "View Role",
+          "Add Employee",
+          "View Employee",
+          "Update Employee",
+          "Exit",
+        ],
       },
     ])
 
@@ -30,14 +40,24 @@ async function init() {
       // console.log(data);
 
       switch (data.main) {
-        case "Add":
-          create();
+        case "Add Department":
+          createDepartment();
           break;
-        case "View":
-          display();
+        case "Add Role":
+          createRole();
           break;
-        case "Update":
-          Update();
+        case "Add Employee":
+          createEmployee();
+          break;
+        case "View Department":
+          displayDepartment();
+          break;
+        case "View Role":
+          displayRole();
+        case "View Employee":
+          displayEmployee();
+        case "Update Employee":
+          UpdateEmployee();
         default:
           return;
       }
@@ -45,7 +65,7 @@ async function init() {
 }
 
 // Add departments, roles, employees
-async function create() {
+async function createDepartment() {
   await questions
     .prompt([
       {
@@ -56,26 +76,20 @@ async function create() {
       },
     ])
 
-    .then((data) => {
-      // console.log(data);
-
-      switch (data.main) {
-        case "Add department":
-          createDepartment();
-          break;
-        case "Add role":
-          displayDepartment();
-          break;
-        case "Add employee":
-          UpdateDepartment();
-        default:
-          return;
-      }
-    });
 }
 
-function createDepartment() {
-    id = 0 
+async function createDepartment() {
+  let allDept = await connection.query(`SELECT id, name FROM department;`);
+  const response = await inquirer.prompt([
+    {
+      name: "name",
+      message: "add your dept!",
+    },
+  ]);
+
+  connection.query(`INSERT INTO department SET ?;`, response);
+  console.table(allDept);
+  mainMenu();
 }
 
 init();
