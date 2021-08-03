@@ -9,9 +9,10 @@ const connection = mysql.createConnection({
     // Your username
     user: "root",
   
-    // Be sure to update with your own MySQL password!
+    // Update with your own MySQL password!
     password: "",
-    database: "employees",
+    database: "tracker_db",
+    
 });
 
   module.exports = connection; 
