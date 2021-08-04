@@ -142,7 +142,7 @@ async function createEmployee() {
 
 // View departments, roles, employees
 
-async function displayDepartments() {
+function displayDepartments() {
     let query = `SELECT * FROM department`
     connection.query(query, function (err, data) {
       if (err) throw err;
@@ -152,7 +152,7 @@ async function displayDepartments() {
     
   }
 
-  async function displayRoles() {
+  function displayRoles() {
     let query = `SELECT * FROM role`
     connection.query(query, function (err, data) {
       if (err) throw err;
@@ -162,7 +162,7 @@ async function displayDepartments() {
     
   }
 
-  async function displayEmployees() {
+  function displayEmployees() {
     let query = `SELECT * FROM employee`
     connection.query(query, function (err, data) {
       if (err) throw err;
