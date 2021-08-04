@@ -41,8 +41,10 @@ async function init() {
           break;
         case "View Roles":
           displayRoles();
+          break;
         case "View Employees":
           displayEmployees();
+          break;
         case "Update Roles":
           UpdateRoles();
         default:
@@ -70,7 +72,7 @@ async function createDepartment() {
         function (err, res) {
           if (err) throw err;
           console.log("Department has been added, returning to the main menu");
-          init();
+          displayDepartments()
         }
       );
     });
@@ -99,10 +101,10 @@ async function createRole() {
     .then((data) => {
       console.log(data);
       connection.query(
-        "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?) ", [data.title, data.salary, data.dId], function(err, res){
+        "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)", [data.title, data.salary, data.dId], function(err, res){
           if (err) throw err;
           console.log("Role has been added, returning to the main menu");
-          init();
+          displayRoles();
         }
       );
     });
@@ -134,10 +136,10 @@ async function createEmployee() {
     ])
     .then((data) => {
       console.log(data);
-      connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?) ", [data.efname, data.elname, data.rId, data.mId], function (err, res) {
+      connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", [data.efname, data.elname, data.rId, data.mId], function (err, res) {
         if (err) throw err;
         console.log("Employee has been added, returning to the main menu");
-        init();
+        displayEmployees();
       });
     });
 }
