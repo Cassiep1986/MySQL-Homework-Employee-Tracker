@@ -2,17 +2,6 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 const connection = require("./server");
 
-// Update employee roles
-
-// Hints
-// You may wish to include a seed.sql file to pre-populate your database. This will make development of individual features much easier.
-
-// Focus on getting the basic functionality completed before working on more advanced features.
-
-// Review the week's activities for a refresher on MySQL.
-
-// Check out SQL Bolt for some extra MySQL help.
-
 async function init() {
   await inquirer
     .prompt([
@@ -47,14 +36,14 @@ async function init() {
           createEmployee();
           break;
         case "View Departments":
-          displayDepartment();
+          displayDepartments();
           break;
         case "View Roles":
-          displayRole();
+          displayRoles();
         case "View Employees":
-          displayEmployee();
+          displayEmployees();
         case "Update Roles":
-          UpdateEmployee();
+          UpdateRoles();
         default:
           return;
       }
@@ -71,17 +60,11 @@ async function createDepartment() {
         name: "dname",
         message: "Enter the department name (i.e. Sales, corporate etc.)",
       },
-      // {
-      //     type:"input",
-      //     name: "dId",
-      //     message: "Enter the desired department ID #"
-      // },
     ])
     .then((data) => {
       console.log(data);
       connection.query("INSERT INTO department SET ?", {
         name: data.dname,
-        //   id: data.dId
       });
       console.log("Department has been added, returning to main menu");
       init();
@@ -93,32 +76,27 @@ async function createRole() {
     .prompt([
       {
         type: "input",
-        name: "rname",
-        message: "Enter the employee's title (i.e sales rep, manager, etc.)",
+        name: "title",
+        message: "Enter an employee title (i.e sales rep, manager, etc.)",
       },
-      //   {
-      //       type:"input",
-      //       name: "dId",
-      //       message: "Enter the desired ID # for this role (This id # is separate from the deparment and employee id number.)"
-      //   },
       {
         type: "input",
         name: "salary",
         message:
-          "Enter the salary amount for this employee (without $ or , characters)",
+          "Enter the salary amount for this employee type (without $ or , characters)",
       },
       {
         type: "input",
-        name: "rId",
-        message: "Enter the desired ID # for this department",
+        name: "dId",
+        message: "Enter the desired department ID #",
       },
     ])
     .then((data) => {
       console.log(data);
       connection.query("INSERT INTO role SET ?", {
-        title: data.rname,
+        title: data.title,
         salary: data.salary,
-        id: data.rId,
+        id: data.dId,
       });
       console.log("Role has been added, returning to main menu");
       init();
@@ -131,16 +109,16 @@ async function createEmployee() {
       {
         type: "input",
         name: "efname",
-        message: "Enter the employee's first name)",
+        message: "Enter the employee's first name",
       },
       {
         type: "input",
         name: "elname",
-        message: "Enter the employee's last name)",
+        message: "Enter the employee's last name",
       },
       {
         type: "input",
-        name: "salary",
+        name: "rId",
         message: "Enter the employee's role ID #",
       },
       {
@@ -164,29 +142,72 @@ async function createEmployee() {
 
 // View departments, roles, employees
 
-async function displayDepartment() {
-    const response = await inquirer
-      .prompt([
-        {
-          type: "input",
-          name: "dname",
-          message: "Enter the department name (i.e. Sales, corporate etc.)",
-        },
-        // {
-        //     type:"input",
-        //     name: "dId",
-        //     message: "Enter the desired department ID #"
-        // },
-      ])
-      .then((data) => {
-        console.log(data);
-        connection.query("INSERT INTO department SET ?", {
-          name: data.dname,
-          //   id: data.dId
-        });
-        console.log("Department has been added, returning to main menu");
-        init();
-      });
+async function displayDepartments() {
+    let query = `SELECT * FROM department`
+    connection.query(query, function (err, data) {
+      if (err) throw err;
+      console.table(data);
+       init();
+    });
+    
   }
 
+  async function displayRoles() {
+    let query = `SELECT * FROM role`
+    connection.query(query, function (err, data) {
+      if (err) throw err;
+      console.table(data);
+       init();
+    });
+    
+  }
+
+  async function displayEmployees() {
+    let query = `SELECT * FROM employee`
+    connection.query(query, function (err, data) {
+      if (err) throw err;
+      console.table(data);
+       init();
+    });
+    
+  }
+
+  // Update employee roles
+
+  async function UpdateRoles() {
+    connection.query("SELECT * FROM role", (err, data) => {
+        if(err) throw err;
+        // console.log(data);
+        const choices = data.map((role) => (role.title));
+        console.log(choices);
+
+        inquirer
+        .prompt([
+              {
+                  type:"list",
+                  name:"update",
+                  message:"Select the title name that you would like to change",
+                  choices: choices
+              },
+              {
+                  type:"input",
+                  name:"newRole",
+                  message:"Enter the new title name"
+              },
+          ])
+          .then((data) => {
+            console.log(data.newRole);
+            connection.query(`UPDATE role SET ? WHERE ?`, 
+                [
+                    {title: `${data.newRole}`}, 
+                    {title: `${data.update}`}
+                ], 
+                (err, res) => {
+                    if (err) throw err;
+                    console.log("Role has been updated, returning to main menu.");
+                init();
+            }); 
+          });
+    });
+  };
 init();
