@@ -69,7 +69,9 @@ async function createDepartment() {
         data.dname,
         function (err, res) {
           if (err) throw err;
-          console.log("Department has been added, returning to main menu");
+          console.log("Department has been added");
+          displayDepartments()
+          console.log("Returning to main menu")
           init();
         }
       );
@@ -96,12 +98,14 @@ async function createRole() {
         message: "Enter the desired department ID #",
       },
     ])
-    .then((err, data) => {
+    .then((data) => {
       console.log(data);
       connection.query(
         "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?) ", [data.title, data.salary, data.dId], function(err, res){
           if (err) throw err;
-          console.log("Role has been added, returning to main menu");
+          console.log("Role has been added");
+          displayRoles()
+          console.log("Returning to main menu")
           init();
         }
       );
@@ -134,15 +138,13 @@ async function createEmployee() {
     ])
     .then((data) => {
       console.log(data);
-      connection.query("INSERT INTO employee SET ?", {
-        first_name: data.efname,
-        last_name: data.elname,
-        role_id: data.rId,
-        manager_id: data.mId,
+      connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?) ", [data.efname, data.elname, data.rId, data.mID], function (err, res) {
+        if (err) throw err;
+        console.log("Employee has been added");
+        displayEmployees()
+        console.loge("Returning to main menu")
+        init();
       });
-      console.log("Employee has been added, returning to main menu");
-      // if (err) throw err;
-      init();
     });
 }
 
