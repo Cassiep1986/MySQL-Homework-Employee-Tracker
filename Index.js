@@ -142,7 +142,7 @@ async function createEmployee() {
         if (err) throw err;
         console.log("Employee has been added");
         displayEmployees()
-        console.loge("Returning to main menu")
+        console.log("Returning to main menu")
         init();
       });
     });
@@ -208,6 +208,7 @@ async function UpdateRoles() {
           (err, res) => {
             if (err) throw err;
             console.log("Role has been updated, returning to main menu.");
+            displayRoles()
             init();
           }
         );
