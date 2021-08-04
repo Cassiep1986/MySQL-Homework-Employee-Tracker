@@ -1,4 +1,4 @@
-use employees;
+use tracker_db;
 
 INSERT INTO
     department (name)
@@ -18,7 +18,7 @@ VALUES
     ('Human Resources Manager', 80000, 2),
     ('CEO', 500000, 3),
     ('Administrative assistant', 60000, 3),
-    ('Sales Representative', 100000, 3),
+    ('Sales Representative', 100000, 3);
 
 INSERT INTO
     employee (first_name, last_name, role_id)
@@ -31,7 +31,7 @@ VALUES
     ('Harold', 'Lee', 5),
     ('Kumar', 'Patel', 6),
     ('Rick', 'Sanchez', 7),
-    ('Morty', 'Smith', 1),
+    ('Morty', 'Smith', 1);
 
 SELECT
     *

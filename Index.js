@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 const connection = require("./server");
+const table = require("console.table");
 
 async function init() {
   await inquirer
@@ -63,11 +64,15 @@ async function createDepartment() {
     ])
     .then((data) => {
       console.log(data);
-      connection.query("INSERT INTO department SET ?", {
-        name: data.dname,
-      });
-      console.log("Department has been added, returning to main menu");
-      init();
+      connection.query(
+        "INSERT INTO department (name) VALUES (?)",
+        data.dname,
+        function (err, res) {
+          if (err) throw err;
+          console.log("Department has been added, returning to main menu");
+          init();
+        }
+      );
     });
 }
 
@@ -91,15 +96,15 @@ async function createRole() {
         message: "Enter the desired department ID #",
       },
     ])
-    .then((data) => {
+    .then((err, data) => {
       console.log(data);
-      connection.query("INSERT INTO role SET ?", {
-        title: data.title,
-        salary: data.salary,
-        id: data.dId,
-      });
-      console.log("Role has been added, returning to main menu");
-      init();
+      connection.query(
+        "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?) ", [data.title, data.salary, data.dId], function(err, res){
+          if (err) throw err;
+          console.log("Role has been added, returning to main menu");
+          init();
+        }
+      );
     });
 }
 
@@ -136,6 +141,7 @@ async function createEmployee() {
         manager_id: data.mId,
       });
       console.log("Employee has been added, returning to main menu");
+      // if (err) throw err;
       init();
     });
 }
@@ -143,71 +149,67 @@ async function createEmployee() {
 // View departments, roles, employees
 
 function displayDepartments() {
-    let query = `SELECT * FROM department`
-    connection.query(query, function (err, data) {
-      if (err) throw err;
-      console.table(data);
-       init();
-    });
-    
-  }
+  let query = `SELECT * FROM department`;
+  connection.query(query, function (err, data) {
+    if (err) throw err;
+    console.table(data);
+    init();
+  });
+}
 
-  function displayRoles() {
-    let query = `SELECT * FROM role`
-    connection.query(query, function (err, data) {
-      if (err) throw err;
-      console.table(data);
-       init();
-    });
-    
-  }
+function displayRoles() {
+  let query = `SELECT * FROM role`;
+  connection.query(query, function (err, data) {
+    if (err) throw err;
+    console.table(data);
+    init();
+  });
+}
 
-  function displayEmployees() {
-    let query = `SELECT * FROM employee`
-    connection.query(query, function (err, data) {
-      if (err) throw err;
-      console.table(data);
-       init();
-    });
-    
-  }
+function displayEmployees() {
+  let query = `SELECT * FROM employee`;
+  connection.query(query, function (err, data) {
+    if (err) throw err;
+    console.table(data);
+    init();
+  });
+}
 
-  // Update employee roles
+// Update employee roles
 
-  async function UpdateRoles() {
-    connection.query("SELECT * FROM role", (err, data) => {
-        if(err) throw err;
-        // console.log(data);
-        const choices = data.map((role) => (role.title));
-        console.log(choices);
+async function UpdateRoles() {
+  connection.query("SELECT * FROM role", (err, data) => {
+    if (err) throw err;
+    // console.log(data);
+    const choices = data.map((role) => role.title);
+    console.log(choices);
 
-        inquirer
-        .prompt([
-              {
-                  type:"list",
-                  name:"update",
-                  message:"Select the title name that you would like to change",
-                  choices: choices
-              },
-              {
-                  type:"input",
-                  name:"newRole",
-                  message:"Enter the new title name"
-              },
-          ])
-          .then((data) => {
-            console.log(data.newRole);
-            connection.query(`UPDATE role SET ? WHERE ?`, 
-                [
-                    {title: `${data.newRole}`}, 
-                    {title: `${data.update}`}
-                ], 
-                (err, res) => {
-                    if (err) throw err;
-                    console.log("Role has been updated, returning to main menu.");
-                init();
-            }); 
-          });
-    });
-  };
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "update",
+          message: "Select the title name that you would like to change",
+          choices: choices,
+        },
+        {
+          type: "input",
+          name: "newRole",
+          message: "Enter the new title name",
+        },
+      ])
+      .then((data) => {
+        console.log(data.newRole);
+        connection.query(
+          `UPDATE role SET ? WHERE ?`,
+          [{ title: `${data.newRole}` }, { title: `${data.update}` }],
+          (err, res) => {
+            if (err) throw err;
+            console.log("Role has been updated, returning to main menu.");
+            init();
+          }
+        );
+      });
+  });
+}
 init();
