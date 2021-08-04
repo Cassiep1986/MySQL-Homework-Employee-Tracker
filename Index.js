@@ -2,8 +2,6 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 const connection = require("./server");
 
-// View departments, roles, employees
-
 // Update employee roles
 
 // Hints
@@ -21,15 +19,15 @@ async function init() {
       {
         type: "list",
         name: "main",
-        message: "Please Select an Option",
+        message: "Main Menu. Please Select an Option",
         choices: [
           "Add Department",
-          "View Department",
           "Add Role",
-          "View Role",
           "Add Employee",
-          "View Employee",
-          "Update Employee",
+          "View Departments",
+          "View Roles",
+          "View Employees",
+          "Update Roles",
           "Exit",
         ],
       },
@@ -48,14 +46,14 @@ async function init() {
         case "Add Employee":
           createEmployee();
           break;
-        case "View Department":
+        case "View Departments":
           displayDepartment();
           break;
-        case "View Role":
+        case "View Roles":
           displayRole();
-        case "View Employee":
+        case "View Employees":
           displayEmployee();
-        case "Update Employee":
+        case "Update Roles":
           UpdateEmployee();
         default:
           return;
@@ -66,19 +64,129 @@ async function init() {
 // Add departments, roles, employees
 
 async function createDepartment() {
+  const response = await inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "dname",
+        message: "Enter the department name (i.e. Sales, corporate etc.)",
+      },
+      // {
+      //     type:"input",
+      //     name: "dId",
+      //     message: "Enter the desired department ID #"
+      // },
+    ])
+    .then((data) => {
+      console.log(data);
+      connection.query("INSERT INTO department SET ?", {
+        name: data.dname,
+        //   id: data.dId
+      });
+      console.log("Department has been added, returning to main menu");
+      init();
+    });
+}
 
-  const response = await inquirer.prompt([
-    { 
-        type:"input",
-        name: "dname", 
-        message: "Add your department name" },
-  ]).then((data) => {
-      console.log(data)
-  })};
+async function createRole() {
+  const response = await inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "rname",
+        message: "Enter the employee's title (i.e sales rep, manager, etc.)",
+      },
+      //   {
+      //       type:"input",
+      //       name: "dId",
+      //       message: "Enter the desired ID # for this role (This id # is separate from the deparment and employee id number.)"
+      //   },
+      {
+        type: "input",
+        name: "salary",
+        message:
+          "Enter the salary amount for this employee (without $ or , characters)",
+      },
+      {
+        type: "input",
+        name: "rId",
+        message: "Enter the desired ID # for this department",
+      },
+    ])
+    .then((data) => {
+      console.log(data);
+      connection.query("INSERT INTO role SET ?", {
+        title: data.rname,
+        salary: data.salary,
+        id: data.rId,
+      });
+      console.log("Role has been added, returning to main menu");
+      init();
+    });
+}
 
-//   connection.query(`INSERT INTO department SET ?;`, response);
-//   console.table(allDept);
-//   mainMenu();
-// }
+async function createEmployee() {
+  const response = await inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "efname",
+        message: "Enter the employee's first name)",
+      },
+      {
+        type: "input",
+        name: "elname",
+        message: "Enter the employee's last name)",
+      },
+      {
+        type: "input",
+        name: "salary",
+        message: "Enter the employee's role ID #",
+      },
+      {
+        type: "input",
+        name: "mId",
+        message: "Enter the employee's manager ID #",
+      },
+    ])
+    .then((data) => {
+      console.log(data);
+      connection.query("INSERT INTO employee SET ?", {
+        first_name: data.efname,
+        last_name: data.elname,
+        role_id: data.rId,
+        manager_id: data.mId,
+      });
+      console.log("Employee has been added, returning to main menu");
+      init();
+    });
+}
+
+// View departments, roles, employees
+
+async function displayDepartment() {
+    const response = await inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "dname",
+          message: "Enter the department name (i.e. Sales, corporate etc.)",
+        },
+        // {
+        //     type:"input",
+        //     name: "dId",
+        //     message: "Enter the desired department ID #"
+        // },
+      ])
+      .then((data) => {
+        console.log(data);
+        connection.query("INSERT INTO department SET ?", {
+          name: data.dname,
+          //   id: data.dId
+        });
+        console.log("Department has been added, returning to main menu");
+        init();
+      });
+  }
 
 init();
