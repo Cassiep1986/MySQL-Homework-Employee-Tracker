@@ -1,8 +1,7 @@
-const questions = require("inquirer");
+const inquirer = require("inquirer");
 const mysql = require("mysql");
 const connection = require("./server");
 
-// Add departments, roles, employees
 // View departments, roles, employees
 
 // Update employee roles
@@ -17,7 +16,7 @@ const connection = require("./server");
 // Check out SQL Bolt for some extra MySQL help.
 
 async function init() {
-  await questions
+  await inquirer
     .prompt([
       {
         type: "list",
@@ -65,31 +64,21 @@ async function init() {
 }
 
 // Add departments, roles, employees
-async function createDepartment() {
-  await questions
-    .prompt([
-      {
-        type: "list",
-        name: "main",
-        message: "Please Select an Option",
-        choices: ["Add department", "Add role", "Add employee", "Exit"],
-      },
-    ])
-
-}
 
 async function createDepartment() {
-  let allDept = await connection.query(`SELECT id, name FROM department;`);
+
   const response = await inquirer.prompt([
-    {
-      name: "name",
-      message: "add your dept!",
-    },
-  ]);
+    { 
+        type:"input",
+        name: "dname", 
+        message: "Add your department name" },
+  ]).then((data) => {
+      console.log(data)
+  })};
 
-  connection.query(`INSERT INTO department SET ?;`, response);
-  console.table(allDept);
-  mainMenu();
-}
+//   connection.query(`INSERT INTO department SET ?;`, response);
+//   console.table(allDept);
+//   mainMenu();
+// }
 
 init();
